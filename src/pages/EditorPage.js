@@ -1,7 +1,21 @@
-import React, { useState } from 'react'
+import React, { useEffect,useState,useRef } from 'react'
 import Client from '../components/Client'
-// import Editor from '../components/Editor';
+import Editor from '../components/Editor';
+import { initSocket } from '../socket';
+import {Actions} from '../Actions';
+import { useLocation } from 'react-router-dom';
 const EditorPage=()=> { 
+  const socketRef=useRef(null);
+  const location=useLocation();
+  useEffect(() => {
+  const init =async()=>{
+    socketRef.current=await initSocket();
+    socketRef.current.emit(Actions.JOIN,{
+      username:location.state?.username,
+    });
+  }
+  init();
+  })
   const [clients] = useState([
     {
       socketId: 1,
@@ -42,7 +56,7 @@ const EditorPage=()=> {
       </div>
 
       <div className="editorWrap">
-        {/* <Editor /> */}
+        <Editor />
       </div>
     </div>
   )

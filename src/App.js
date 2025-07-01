@@ -20,6 +20,7 @@ function App() {
           }
         ></Toaster>
       </div>
+      {/* browser routes for routing overall website */}
       <BrowserRouter>
         <Routes>
 
