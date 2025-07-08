@@ -65,7 +65,7 @@ const EditorPage = () => {
         socketRef.current.off(Actions.DISCONNECTED);
       }
     };
-  }, []);
+  }, [location.state?.username,roomId,reactNavigator]);
 
   //
   // if (location.state) {
@@ -94,7 +94,7 @@ const EditorPage = () => {
       </div>
 
       <div className="editorWrap">
-        <Editor socketRef={socketRef}/>
+        <Editor socketRef={socketRef} roomId={roomId}/>
       </div>
     </div>
   );
