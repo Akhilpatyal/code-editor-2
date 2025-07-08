@@ -1,5 +1,5 @@
  .homePagewrapper {
-   /* height: 100vh; */
+   height: 100vh;
    display: flex;
    justify-content: center;
    align-items: center;
@@ -95,7 +95,7 @@
  .mainWrap {
    display: grid;
    grid-template-columns: 230px 1fr;
-   height: 100vh;
+   /* height: 100vh; */
  }
 
  .aside {

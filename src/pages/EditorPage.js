@@ -1,54 +1,92 @@
-import React, { useEffect,useState,useRef } from 'react'
-import Client from '../components/Client'
-import Editor from '../components/Editor';
-import { initSocket } from '../socket';
-import {Actions} from '../Actions';
-import { useLocation } from 'react-router-dom';
-const EditorPage=()=> { 
-  const socketRef=useRef(null);
-  const location=useLocation();
+import React, { useEffect, useState, useRef } from "react";
+import Client from "../components/Client";
+import Editor from "../components/Editor";
+import { initSocket } from "../socket";
+import { Actions } from "../Actions";
+import {
+  // Navigate,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
+import toast from "react-hot-toast";
+const EditorPage = () => {
+  const [clients, setClients] = useState([]);
+
+  //
+  const socketRef = useRef(null);
+  const location = useLocation();
+  const { roomId } = useParams();
+  const reactNavigator = useNavigate();
   useEffect(() => {
-  const init =async()=>{
-    socketRef.current=await initSocket();
-    socketRef.current.emit(Actions.JOIN,{
-      username:location.state?.username,
-    });
-  }
-  init();
-  })
-  const [clients] = useState([
-    {
-      socketId: 1,
-      username: 'jk munna',
-    },
-    {
-      socketId: 2,
-      username: 'pj kapla',
-    },
-    {
-      socketId: 3,
-      username: 'Lj kapla',
-    }
-  ]);
+    const init = async () => {
+      socketRef.current = await initSocket();
+      // error handling
+      socketRef.current.on("connect_error", (err) => handleErr(err));
+      socketRef.current.on("connect_failed", (err) => handleErr(err));
+      function handleErr(err) {
+        console.log("socket error", err);
+        toast.error("scoket connection failed please try again later");
+        reactNavigator("/");
+      }
+
+      //
+      socketRef.current.emit(Actions.JOIN, {
+        roomId,
+        username: location.state?.username,
+      });
+      // listening socket
+      socketRef.current.on(
+        Actions.JOINED,
+        ({ clients: connectedClients, username, socketId }) => {
+          if (username !== location.state?.username) {
+            toast.success(`Welcome ${username} to the room ${roomId}`);
+            console.log(`Welcome ${username} to the room ${roomId}`);
+          }
+          setClients(connectedClients);
+        }
+      );
+
+      // listening for disconnected
+      socketRef.current.on(Actions.DISCONNECTED, ({ socketId, username }) => {
+        toast.success(`${username} left the room`);
+        setClients((prev) => {
+          return prev.filter((client) => client.socketId !== socketId);
+        });
+      });
+    };
+    init();
+
+    // cleaning function
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current.off(Actions.JOINED);
+        socketRef.current.off(Actions.DISCONNECTED);
+      }
+    };
+  }, []);
+
+  //
+  // if (location.state) {
+  //   return <Navigate to="" state={location.state} />;
+  // }
   return (
-    <div className='mainWrap'>
+    <div className="mainWrap">
       <div className="aside">
         <div className="asideInner">
           <div className="logo">
-            <img src="/code-sync.png" alt="code-sync.png" className='logoImage' />
+            <img
+              src="/code-sync.png"
+              alt="code-sync.png"
+              className="logoImage"
+            />
           </div>
           <h3>Connected</h3>
           <div className="clientList">
-            {
-              clients.map((client) =>
-              (<Client
-                key={client.socketId}
-                username={client.username}
-              />
-
-              ))
-
-            }
+            {clients.map((client) => (
+              <Client key={client.socketId} username={client.username} />
+            ))}
           </div>
         </div>
         <button className="btn copyBtn">Copy RoomID</button>
@@ -56,10 +94,10 @@ const EditorPage=()=> {
       </div>
 
       <div className="editorWrap">
-        <Editor />
+        <Editor socketRef={socketRef}/>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default EditorPage;
