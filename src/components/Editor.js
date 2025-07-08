@@ -27,28 +27,27 @@ const Editor = ({ socketRef, roomId }) => {
         const { origin } = changes;
         const code = instance.getValue();
         // console.log(code);
-        if (origin !== 'setValue') {
+        if (origin !== "setValue") {
           socketRef.current.emit(Actions.CODE_CHANGE, { roomId, code });
           // console.log('working');
         }
       });
 
-      
       // editorRef.current.setValue("hello worlds") -- we are use this if we want to change dynamically
     }
     init();
   }, [roomId, socketRef]);
-  useEffect(()=>{
+  useEffect(() => {
     if (socketRef.current) {
       socketRef.current.on(Actions.CODE_CHANGE, ({ code }) => {
-        console.log('receiving');
-        
+        console.log("receiving");
+
         if (code !== null) {
           editorRef.current.setValue(code);
         }
-      }); 
+      });
     }
-  })
+  });
   // what ever we are wrote in this it get emit to socket
   return <textarea id="realTimeEditor" style={{ display: "none" }}></textarea>;
 };

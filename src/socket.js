@@ -1,13 +1,13 @@
-import { io } from 'socket.io-client';
+import { io } from "socket.io-client";
 
 export const initSocket = async () => {
   const BACKEND_URL = process.env.REACT_BACKEND_URL || "http://localhost:5000";
 
   const options = {
-    'force new connection': true,
+    "force new connection": true,
     reconnectionAttempts: Infinity,
     timeout: 10000,
-    transports: ['websocket'],
+    transports: ["websocket"],
   };
 
   try {
