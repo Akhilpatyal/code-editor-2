@@ -51,6 +51,10 @@ io.on("connection", (socket) => {
     socket.in(roomId).emit(Actions.CODE_CHANGE, { code });
   });
 
+  socket.on(Actions.SYNC_CODE, ({ socketId, code }) => {
+    io.to(socketId).emit(Actions.CODE_CHANGE, { code });
+  });
+
   socket.on("disconnecting", () => {
     const rooms = [...socket.rooms];
     rooms.forEach((roomId) => {
