@@ -5,7 +5,7 @@ import "codemirror/mode/javascript/javascript";
 import Codemirror from "codemirror";
 import { Actions } from "../Actions";
 
-const Editor = ({ socketRef, roomId,onCodeChange }) => {
+const Editor = ({ socketRef, roomId, onCodeChange }) => {
   const editorRef = useRef(null);
   useEffect(() => {
     async function init() {
@@ -37,7 +37,7 @@ const Editor = ({ socketRef, roomId,onCodeChange }) => {
       // editorRef.current.setValue("hello worlds") -- we are use this if we want to change dynamically
     }
     init();
-  }, [roomId, socketRef   ,onCodeChange]);
+  }, [roomId, socketRef, onCodeChange]);
   useEffect(() => {
     if (socketRef.current) {
       socketRef.current.on(Actions.CODE_CHANGE, ({ code }) => {
@@ -48,7 +48,6 @@ const Editor = ({ socketRef, roomId,onCodeChange }) => {
         }
       });
     }
-  
   });
   // what ever we are wrote in this it get emit to socket
   return <textarea id="realTimeEditor" style={{ display: "none" }}></textarea>;

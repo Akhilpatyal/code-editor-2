@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 function Home() {
   const navigate = useNavigate();
   const [roomid, setRoomid] = useState("");
-  const [userName, setuserName] = useState("");
+  const [username, setuserName] = useState("");
 
   const createNewRoom = (e) => {
     e.preventDefault(); //so that the page didnot refresh during click
@@ -15,7 +15,7 @@ function Home() {
   };
 
   const joinRoom = () => {
-    if (!roomid || !userName) {
+    if (!roomid || !username) {
       toast.error("Room Id and username is required");
       return;
     }
@@ -23,7 +23,7 @@ function Home() {
       // we can also passes the state as a parameter also we do by redux
       state: {
         roomid,
-        userName,
+        username,
       },
     });
   };
@@ -56,7 +56,7 @@ function Home() {
             className="inputBox"
             placeholder="USER NAME"
             onChange={(e) => setuserName(e.target.value)}
-            value={userName}
+            value={username}
             onKeyUp={handleEnter}
           />
 
