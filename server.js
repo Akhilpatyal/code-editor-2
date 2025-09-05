@@ -1,5 +1,6 @@
 // import statement
 const express = require("express");
+const path=require("path");
 const app = express();
 const http = require("http");
 const { Server } = require("socket.io");
@@ -10,7 +11,12 @@ app.use(express.json());
 // create server
 const server = http.createServer(app);
 const io = new Server(server);
-
+// when ever request is comming it , server directly serve build file
+app.use(express.static('build'));
+// global middleware
+app.use((req,res,next)=>{
+  res.sendFile(path.join(__dirname,'build','index.html'));
+})
 const userSocketMap = {};
 
 // functions

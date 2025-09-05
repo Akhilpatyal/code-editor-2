@@ -2,6 +2,8 @@ import React, { useEffect, useRef } from "react";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/dracula.css";
 import "codemirror/mode/javascript/javascript";
+import "codemirror/addon/edit/closetag";
+import "codemirror/addon/edit/closebrackets";
 import Codemirror from "codemirror";
 import { Actions } from "../Actions";
 
@@ -37,7 +39,7 @@ const Editor = ({ socketRef, roomId, onCodeChange }) => {
       // editorRef.current.setValue("hello worlds") -- we are use this if we want to change dynamically
     }
     init();
-  }, [roomId, socketRef, onCodeChange]);
+  }, [roomId, socketRef]);
   useEffect(() => {
     if (socketRef.current) {
       socketRef.current.on(Actions.CODE_CHANGE, ({ code }) => {

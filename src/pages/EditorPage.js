@@ -44,10 +44,16 @@ const EditorPage = () => {
         Actions.JOINED,
         ({ clients: connectedClients, username, socketId }) => {
           if (username !== location.state?.username) {
-            toast.success(`Welcome ${username} to the room ${roomId}`);
-            console.log(`Welcome ${username} to the room ${roomId}`);
+            toast.success(`Welcome ${username}`);
+            // console.log(`Welcome ${username} to the room ${roomId}`);
           }
-          setClients(connectedClients);
+          // i have used this so client are filter not duplicate multiple times
+          setClients(
+            connectedClients.filter(
+              (client, index, self) =>
+                index === self.findIndex((c) => c.username === client.username)
+            )
+          );
           socketRef.current.emit(Actions.SYNC_CODE, {
             code: codeRef.current,
             socketId,
