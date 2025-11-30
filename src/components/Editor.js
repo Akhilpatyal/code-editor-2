@@ -39,7 +39,7 @@ const Editor = ({ socketRef, roomId, onCodeChange }) => {
       // editorRef.current.setValue("hello worlds") -- we are use this if we want to change dynamically
     }
     init();
-  }, [roomId, socketRef]);
+  }, [roomId, socketRef,onCodeChange]);
   useEffect(() => {
     if (socketRef.current) {
       socketRef.current.on(Actions.CODE_CHANGE, ({ code }) => {

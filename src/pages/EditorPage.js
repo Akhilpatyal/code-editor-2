@@ -83,7 +83,7 @@ const EditorPage = () => {
   }, [location.state?.username, roomId, reactNavigator]);
   const onCodeChange = useCallback((code) => {
     codeRef.current = code;
-  }, []);
+  }, [codeRef]);
   async function copyRoomId() {
     try {
       await navigator.clipboard.writeText(roomId);
