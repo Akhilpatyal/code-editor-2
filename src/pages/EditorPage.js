@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { useCallback } from "react";
 import Client from "../components/Client";
 import Editor from "../components/Editor";
 import { initSocket } from "../socket";
@@ -80,7 +81,9 @@ const EditorPage = () => {
       }
     };
   }, [location.state?.username, roomId, reactNavigator]);
-
+  const onCodeChange = useCallback((code) => {
+    codeRef.current = code;
+  }, []);
   async function copyRoomId() {
     try {
       await navigator.clipboard.writeText(roomId);
@@ -93,6 +96,7 @@ const EditorPage = () => {
   function leaveRoom() {
     reactNavigator("/");
   }
+
   //
   // if (location.state) {
   //   return <Navigate to="" state={location.state} />;
@@ -127,9 +131,7 @@ const EditorPage = () => {
         <Editor
           socketRef={socketRef}
           roomId={roomId}
-          onCodeChange={(code) => {
-            codeRef.current = code;
-          }}
+          onCodeChange={onCodeChange}
         />
       </div>
     </div>

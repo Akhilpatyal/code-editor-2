@@ -74,7 +74,7 @@ function Home() {
       <footer>
         <h4>
           Built with @ Love India &nbsp;
-          <a href="google.com">Akhil Patyal</a>
+          <a href="https://google.com">Akhil Patyal</a>
         </h4>
       </footer>
     </div>
