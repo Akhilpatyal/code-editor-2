@@ -5,12 +5,18 @@ const app = express();
 const http = require("http");
 const { Server } = require("socket.io");
 const { Actions } = require("./src/Actions");
-const PORT = process.env.port || 5000;
+const PORT = process.env.PORT || 5000;
 app.use(express.json());
 
 // create server
 const server = http.createServer(app);
-const io = new Server(server);
+// const io = new Server(server);
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
+});
 // when ever request is comming it , server directly serve build file
 app.use(express.static('build'));
 // global middleware
