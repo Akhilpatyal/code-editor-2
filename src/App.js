@@ -5,8 +5,8 @@ import Home from './pages/Home';
 import EditorPage from './pages/EditorPage';
 function App() {
   return (
-    <>
-      <div>
+    <div className="appRoot">
+      <div className="toasterHost">
         <Toaster
           position="top-right"
           toastOptions={
@@ -18,22 +18,17 @@ function App() {
               },
             }
           }
-        ></Toaster>
+        />
       </div>
-      {/* browser routes for routing overall website */}
       <BrowserRouter>
-        <Routes>
-
-          <Route path="/" element={<Home />}></Route>
-
-          <Route path="/EditorPage/:roomId" element={<EditorPage />}>
-
-          </Route>
-
-        </Routes>
+        <div className="appShell">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/editor/:roomId" element={<EditorPage />} />
+          </Routes>
+        </div>
       </BrowserRouter>
-
-    </>
+    </div>
   );
 }
 

@@ -1,95 +1,103 @@
-import React, { useEffect, useState, useRef } from "react";
-import { useCallback } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import Client from "../components/Client";
 import Editor from "../components/Editor";
 import { initSocket } from "../socket";
 import { Actions } from "../Actions";
-import {
-  // Navigate,
-  useLocation,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
+
 const EditorPage = () => {
   const [clients, setClients] = useState([]);
+  const [socketReady, setSocketReady] = useState(false);
   const socketRef = useRef(null);
   const codeRef = useRef(null);
   const location = useLocation();
   const { roomId } = useParams();
   const reactNavigator = useNavigate();
-  useEffect(() => {
-    const init = async () => {
-      socketRef.current = await initSocket();
-      // error handling
-      socketRef.current.on("connect_error", (err) => handleErr(err));
-      socketRef.current.on("connect_failed", (err) => handleErr(err));
-      function handleErr(e) {
-        console.log("socket error", e);
-        toast.error("scoket connection failed please try again later");
-        reactNavigator("/");
-      }
 
-      //
-      socketRef.current.emit(Actions.JOIN, {
-        roomId,
-        username: location.state?.username,
-      });
-      // listening socket
-      if (!location.state?.username) {
-        toast.error("Username is missing. Redirecting...");
-        reactNavigator("/");
+  useEffect(() => {
+    if (!location.state?.username) {
+      toast.error("Username is missing. Redirecting...");
+      reactNavigator("/");
+      return undefined;
+    }
+
+    const handleErr = (e) => {
+      console.log("socket error", e);
+      toast.error("Socket connection failed. Please try again later.");
+      reactNavigator("/");
+    };
+
+    let cancelled = false;
+
+    const init = async () => {
+      const socket = await initSocket();
+      if (cancelled) {
+        socket.disconnect();
         return;
       }
-      socketRef.current.on(
+
+      socketRef.current = socket;
+      setSocketReady(true);
+
+      socket.on("connect_error", handleErr);
+
+      socket.emit(Actions.JOIN, {
+        roomId,
+        username: location.state.username,
+      });
+
+      socket.on(
         Actions.JOINED,
         ({ clients: connectedClients, username, socketId }) => {
           if (username !== location.state?.username) {
             toast.success(`Welcome ${username}`);
-            // console.log(`Welcome ${username} to the room ${roomId}`);
           }
-          // i have used this so client are filter not duplicate multiple times
           setClients(
             connectedClients.filter(
               (client, index, self) =>
                 index === self.findIndex((c) => c.username === client.username)
             )
           );
-          socketRef.current.emit(Actions.SYNC_CODE, {
+          socket.emit(Actions.SYNC_CODE, {
             code: codeRef.current,
             socketId,
           });
         }
       );
 
-      // listening for disconnected
-      socketRef.current.on(Actions.DISCONNECTED, ({ socketId, username }) => {
+      socket.on(Actions.DISCONNECTED, ({ socketId, username }) => {
         toast.success(`${username} left the room`);
-        setClients((prev) => {
-          return prev.filter((client) => client.socketId !== socketId);
-        });
+        setClients((prev) =>
+          prev.filter((client) => client.socketId !== socketId)
+        );
       });
     };
+
     init();
 
-    // cleaning function
     return () => {
+      cancelled = true;
+      setSocketReady(false);
       if (socketRef.current) {
-        socketRef.current.disconnect();
+        socketRef.current.off("connect_error", handleErr);
         socketRef.current.off(Actions.JOINED);
         socketRef.current.off(Actions.DISCONNECTED);
+        socketRef.current.disconnect();
+        socketRef.current = null;
       }
     };
   }, [location.state?.username, roomId, reactNavigator]);
+
   const onCodeChange = useCallback((code) => {
     codeRef.current = code;
-  }, [codeRef]);
+  }, []);
   async function copyRoomId() {
     try {
       await navigator.clipboard.writeText(roomId);
       toast.success("your room id Copied to your clipboard");
     } catch (error) {
-      toast.success("i am not able to copy your roomid");
+      toast.error("Could not copy room ID to clipboard.");
       console.log(error);
     }
   }
@@ -132,6 +140,7 @@ const EditorPage = () => {
           socketRef={socketRef}
           roomId={roomId}
           onCodeChange={onCodeChange}
+          socketReady={socketReady}
         />
       </div>
     </div>

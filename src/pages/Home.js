@@ -19,7 +19,7 @@ function Home() {
       toast.error("Room Id and username is required");
       return;
     }
-    navigate(`/editorPage/${roomid}`, {
+    navigate(`/editor/${roomid}`, {
       // we can also passes the state as a parameter also we do by redux
       state: {
         roomid,

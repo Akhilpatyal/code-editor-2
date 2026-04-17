@@ -1,5 +1,29 @@
+ /* Single column under #root — fills viewport so nested flex/grid get real heights */
+ .appRoot {
+   flex: 1 1 auto;
+   display: flex;
+   flex-direction: column;
+   min-height: 100vh;
+   min-height: 100dvh;
+   width: 100%;
+ }
+
+ .toasterHost {
+   flex: 0 0 auto;
+ }
+
+ .appShell {
+   flex: 1 1 auto;
+   display: flex;
+   flex-direction: column;
+   min-height: 0;
+   width: 100%;
+ }
+
  .homePagewrapper {
-   height: 100vh;
+   flex: 1 1 auto;
+   min-height: 100vh;
+   min-height: 100dvh;
    display: flex;
    justify-content: center;
    align-items: center;
@@ -61,7 +85,8 @@
    font-weight: bold;
  }
 
- .joinBtn, .leaveBtn {
+ .joinBtn,
+ .leaveBtn {
    background: #4aed88;
    width: 100px;
    margin-left: auto;
@@ -92,10 +117,22 @@
 
  }
 
+ /* min-height: 1fr rows only work if the grid has a definite height — force full viewport */
  .mainWrap {
    display: grid;
-   grid-template-columns: 230px 1fr;
-   /* height: 100vh; */
+   grid-template-columns: 230px minmax(0, 1fr);
+   grid-template-rows: minmax(0, 1fr);
+   flex: 1 1 auto;
+   width: 100%;
+   min-height: 0;
+   min-height: 100vh;
+   min-height: 100dvh;
+   box-sizing: border-box;
+ }
+
+ .mainWrap > .aside,
+ .mainWrap > .editorWrap {
+   min-height: 0;
  }
 
  .aside {
@@ -104,6 +141,8 @@
    color: #fff;
    display: flex;
    flex-direction: column;
+   height: 100%;
+   align-self: stretch;
  }
 
  .asideInner {
@@ -116,30 +155,63 @@
    flex-wrap: wrap;
    gap: 20px;
  }
- .client{
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  font-weight: bold;
- }
- .userName{
-  margin-top: 10px;
- }
- .logo{
-  border-bottom: 1px solid #424242;
-  padding-bottom: 14px;
- }
- .logoImage{
-  height: 50px;
- }
- .leaveBtn{
-  width: 100%;
-margin-top: 20px;
+
+ .client {
+   display: flex;
+   align-items: center;
+   flex-direction: column;
+   font-weight: bold;
  }
 
- .CodeMirror{
-  min-height: calc(10vh-20px);
-  font-size: 20px;
-  line-height: 1.5;
-  padding-top: 20px;
+ .userName {
+   margin-top: 10px;
+ }
+
+ .logo {
+   border-bottom: 1px solid #424242;
+   padding-bottom: 14px;
+ }
+
+ .logoImage {
+   height: 50px;
+ }
+
+ .leaveBtn {
+   width: 100%;
+   margin-top: 20px;
+ }
+
+ .editorWrap {
+   display: flex;
+   flex-direction: column;
+   height: 100%;
+   min-width: 0;
+   min-height: 0;
+   overflow: hidden;
+   background: #282a36;
+   align-self: stretch;
+ }
+
+ /* Height is set in JS via editor.setSize — keep flex fallback */
+ .editorWrap .CodeMirror {
+   flex: 1 1 auto;
+   width: 100% !important;
+   min-height: 0 !important;
+   font-size: 20px;
+   line-height: 1.5;
+   padding-top: 20px;
+   box-sizing: border-box;
+ }
+
+ .editorWrap .CodeMirror-scroll {
+   height: 100%;
+   min-height: 0;
+ }
+
+ /* Do not set height here — it overrides editor.setSize() and breaks layout */
+ .cm-s-dracula .CodeMirror-gutters,
+ .cm-s-dracula.CodeMirror {
+   background-color: #282a36 !important;
+   border: none;
+   color: #f8f8f2 !important;
  }

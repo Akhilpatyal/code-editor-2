@@ -1,22 +1,19 @@
 import { io } from "socket.io-client";
 
 export const initSocket = async () => {
-  // const BACKEND_URL = process.env.REACT_BACKEND_URL || "http://localhost:5000";
-  const BACKEND_URL = process.env.REACT_BACKEND_URL || "https://code-editor-2-production.up.railway.app";
+  // CRA only inlines env vars prefixed with REACT_APP_
+  const BACKEND_URL =
+    process.env.REACT_APP_SOCKET_URL ||
+    process.env.REACT_APP_BACKEND_URL ||
+    "http://localhost:5000";
 
   const options = {
-    "force new connection": true,
+    forceNew: true,
     reconnectionAttempts: Infinity,
     timeout: 10000,
     transports: ["websocket"],
-    secure: true, // 🔥 REQUIRED on mobile HTTPS
   };
 
-  try {
-    const socket = io(BACKEND_URL, options);
-    return socket;
-  } catch (error) {
-    console.error("Socket connection failed:", error);
-    throw error;
-  }
+  const socket = io(BACKEND_URL, options);
+  return socket;
 };
